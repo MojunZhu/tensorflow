@@ -65,6 +65,10 @@ logits = [tf.matmul(rnn_output, W) + b for rnn_output in tf.unstack(rnn_outputs,
 predictions = [tf.nn.softmax(logit) for logit in logits]
 # print(predictions)
 
+'''
+ why use logists as cost, is because logists can provide semi-one-hot vector with each entry some value. Then with one-hot y, all values
+ are error except y's 1 entry, before softmax, it is kind of continues, softmax makes it not continue
+'''
 y_as_list = [tf.squeeze(i, squeeze_dims=[1]) for i in tf.split(y_, num_of_steps, axis=1)] # y_as_list = [steps, batch]
 # print(y_as_list)
 # print(y_one_hot_)
@@ -80,11 +84,29 @@ init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
 
+# predicted result
 for i in range(epoch_size):
-    _, cost_val= sess.run([train_step, total_loss], {x_:input_x, y_:input_target})
+    _, cost_val, w_val, b_val, final_state_val = sess.run([train_step, total_loss, W, b, final_state], {x_:input_x, y_:input_target})
     print("===========")
     print("iterater: %s" % i)
     print("+++++++")
     print("loss: %s" % cost_val)
+    print("+++++++")
+    print("w_val %s" % w_val)
+    print("+++++++")
+    print("final_val %s" % final_state_val)
     print("===========")
+ 
+with tf.variable_scope("softmax", reuse=True):
+    print(tf.get_variable("W"))
+
+
+
+
+
+
+
+
+
+
  
